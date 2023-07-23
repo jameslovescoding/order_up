@@ -9,8 +9,9 @@
 </head>
 
 <body>
-  {% if not is_anonymous %}
+  {% if not current_user.is_anonymous %}
   <div>
+    <p>Hello, {{current_user.name}}!</p>
     <form method="post" action="{{ url_for('session.logout') }}">
       <input type="submit" value="logout" />
     </form>

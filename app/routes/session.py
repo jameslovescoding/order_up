@@ -17,7 +17,7 @@ def login():
             return redirect(url_for(".login"))
         login_user(employee)
         return redirect(url_for("orders.index"))
-    return render_template("login.html", form=form, is_anonymous=current_user.is_anonymous)
+    return render_template("login.html", form=form, current_user=current_user)
 
 @bp.route('/logout', methods=["POST"])
 def logout():

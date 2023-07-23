@@ -4,7 +4,7 @@
 <h1>Order Up!</h1>
 <div>
   <h2>Assign Table</h2>
-  <form method="post" action="">
+  <form method="post" action="" id="assign_table">
     {{ table_assign_form.csrf_token }}
     <div>
       {{ table_assign_form.tables.label }}
@@ -19,14 +19,73 @@
     </div>
   </form>
 </div>
+
 <div>
-  <h2>Your Open Orders</h2>
-  {% for order in open_orders %}
-  <p>Order No.{{order.id}} {{order.employee.name}} is working on Table {{order.table.id}}</p>
-  {% endfor %}
+  <h2>My Open Orders</h2>
+  <form id="edit_order">
+    <table>
+      <thead>
+        <tr>
+          <td>Order #</td>
+          <td>Table #</td>
+          <td>Price</td>
+          <td>Close Button</td>
+          <td>Add to Order</td>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in my_open_orders %}
+        <tr>
+          <td>{{order.id}}</td>
+          <td>{{order.table.id}}</td>
+          <td>Price</td>
+          <td><button form="edit_order" formaction="/close_table/{{order.id}}">Close Table</button></td>
+          <td><button form="add_to_order" formaction="/add_to_order/{{order.id}}/">Add to Order</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </form>
 </div>
+
 <div>
   <h2>Menus</h2>
+  <form id="add_to_order">
+    <h3>Entrees</h3>
+    <div>
+      <input type="checkbox" id="chicken_kiev" name="chicken_kiev">
+      <label for="chicken_kiev">Chicken Kiev</label>
+    </div>
+    <div>
+      <input type="checkbox" id="eggplant_parmesan" name="eggplant_parmesan">
+      <label for="eggplant_parmesan">Eggplant Parmesan</label>
+    </div>
+    <h3>Sides</h3>
+    <div>
+      <input type="checkbox" id="french_fries" name="french_fries">
+      <label for="french_fries">French Fries</label>
+    </div>
+    <div>
+      <input type="checkbox" id="deep_fried_onions" name="deep_fried_onions">
+      <label for="deep_fried_onions">Deep-fried Onions</label>
+    </div>
+    <h3>Beverages</h3>
+    <div>
+      <input type="checkbox" id="iced_tea" name="iced_tea">
+      <label for="iced_tea">Iced Tea</label>
+    </div>
+    <div>
+      <input type="checkbox" id="diet_coke" name="diet_coke">
+      <label for="diet_coke">Diet Coke</label>
+    </div>
+  </form>
+</div>
+
+<div>
+  <h2>All Open Orders</h2>
+  {% for order in open_orders %}
+  <p>Order No.{{order.id}}, {{order.employee.name}} is servering Table {{order.table.id}}</p>
+  {% endfor %}
 </div>
 
 {% endblock %}

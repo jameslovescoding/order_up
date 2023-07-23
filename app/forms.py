@@ -7,7 +7,7 @@ from wtforms.fields import (
     SelectField
 )
 
-from wtforms.validators import (DataRequired, ValidationError)
+from wtforms.validators import (DataRequired, ValidationError, InputRequired)
 
 class LoginForm(FlaskForm):
   employee_number = StringField('Employee number', validators=[DataRequired()])
@@ -15,6 +15,6 @@ class LoginForm(FlaskForm):
   submit = SubmitField('Login')
 
 class TableAssignmentForm(FlaskForm):
-    tables = SelectField("Tables", coerce=int)
-    servers = SelectField("Servers", coerce=int)
+    tables = SelectField("Tables", validators=[InputRequired()])
+    servers = SelectField("Servers", validators=[InputRequired()])
     assign = SubmitField("Assign")

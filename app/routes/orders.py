@@ -18,8 +18,6 @@ from sqlalchemy.orm import sessionmaker
 from werkzeug.routing import BaseConverter
 
 
-session = db.session
-
 bp = Blueprint("orders", __name__, url_prefix="")
 
 @bp.route("/", methods=['GET', 'POST'])
@@ -32,18 +30,25 @@ def index():
         employee_id = table_assign_form.data["servers"]
         # print(f'{table_id}, {employee_id}')
         return redirect(f'/assign_table/{table_id}/{employee_id}')
+
     # Get the tables and open orders
     tables = Table.query.order_by(Table.number).all()
     open_orders = Order.query.filter(Order.finished == False)
     busy_table_ids = [order.table_id for order in open_orders]
     open_tables = [table for table in tables if table.id not in busy_table_ids]
-    table_assign_form.tables.choices = [(t.id, f"Table {t.number}") for t in open_tables]
+    table_assign_form.tables.choices = [('', 'Open Tables')] + [(t.id, f"Table {t.number}") for t in open_tables]
     employees = Employee.query.order_by(Employee.id).all()
-    table_assign_form.servers.choices = [(e.id, e.name) for e in employees]
+    table_assign_form.servers.choices = [('', 'Servers')] +[(e.id, e.name) for e in employees]
+
+    # Get my open orders
+    my_open_orders = [order for order in open_orders if order.employee_id == current_user.id]
+    # print(my_open_orders)
+
     return render_template("orders.html",
-                           is_anonymous=current_user.is_anonymous,
+                           current_user=current_user,
                            table_assign_form=table_assign_form,
-                           open_orders=open_orders)
+                           open_orders=open_orders,
+                           my_open_orders=my_open_orders)
 
 
 
@@ -54,8 +59,8 @@ def assign_table(table_id, employee_id):
     new_order = Order(employee_id=employee_id,
                       table_id=table_id,
                       finished=False)
-    session.add(new_order)
-    session.commit()
+    db.session.add(new_order)
+    db.session.commit()
     return redirect(url_for('orders.index'))
 
 
@@ -66,7 +71,7 @@ def close_table(order_id):
     order_id_query = db.session.query(Order).get(order_id)
     print(order_id_query)
     order_id_query.finished=True
-    session.commit()
+    db.session.commit()
     return redirect(url_for('orders.index'))
 
 
@@ -78,6 +83,6 @@ def add_to_order(order_id, order_details):
     for menu_item_id in order_details:
         new_order_detail = OrderDetail(order_id=order_id,
                                menu_item_id=menu_item_id)
-        session.add(new_order_detail)
-    session.commit()
+        db.session.add(new_order_detail)
+    db.session.commit()
     return redirect(url_for('orders.index'))
